@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Google Auth Callback</title>
+</head>
+<body>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const code = urlParams.get('code');
+        
+        if (code) {
+            window.opener.postMessage({ code }, window.location.origin);
+            window.close();
+        } else {
+            document.body.innerHTML = 'Authentication failed. You can close this window.';
+        }
+    </script>
+</body>
+</html> 

@@ -4,11 +4,35 @@
  */
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "googleapi",
+  "name": "gmail-manager",
   "main": "src/index.ts",
-  "compatibility_date": "2025-02-14",
+  "compatibility_date": "2024-01-01",
   "observability": {
     "enabled": true
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "gmail_manager",
+      "database_id": "2d03b6de-d153-4f64-a607-9e35f0a8e55b"
+    }
+  ],
+  "vars": {
+    "JWT_SECRET": "",
+    "GOOGLE_CLIENT_ID": "",
+    "GOOGLE_CLIENT_SECRET": "",
+    "REDIRECT_URI": "https://your-domain.workers.dev/auth/google/callback"
+  },
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS"
+  },
+  "env": {
+    "development": {
+      "vars": {
+        "REDIRECT_URI": "http://127.0.0.1:8787/auth/google/callback"
+      }
+    }
   }
   /**
    * Smart Placement
