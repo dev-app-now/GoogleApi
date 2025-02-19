@@ -1,32 +1,38 @@
 const API_URL = window.location.origin + '/api';
-let token = localStorage.getItem('token');
+
+// Thay đổi token thành getter
+function getToken() {
+    return localStorage.getItem('token');
+}
 
 // UI Elements
 const loginForm = document.getElementById('loginForm');
 const registerForm = document.getElementById('registerForm');
 const gmailList = document.getElementById('gmailList');
 const gmailTokens = document.getElementById('gmailTokens');
+const forgotPasswordForm = document.getElementById('forgotPasswordForm');
 
 // Show/Hide Forms
-document.getElementById('showRegister').addEventListener('click', (e) => {
+document.getElementById('showRegister')?.addEventListener('click', (e) => {
     e.preventDefault();
     loginForm.classList.add('hidden');
     registerForm.classList.remove('hidden');
 });
 
-document.getElementById('showLogin').addEventListener('click', (e) => {
+
+document.getElementById('showForgotPassword').addEventListener('click', (e) => {
     e.preventDefault();
-    registerForm.classList.add('hidden');
+    forgotPasswordForm.classList.add('hidden');
     loginForm.classList.remove('hidden');
 });
 
 // Check Authentication
-if (token) {
+if (getToken()) {
     showGmailList();
 }
 
 // Login Form
-document.getElementById('login').addEventListener('submit', async (e) => {
+document.getElementById('login')?.addEventListener('submit', async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
     
@@ -43,8 +49,7 @@ document.getElementById('login').addEventListener('submit', async (e) => {
         const data = await response.json();
         if (!response.ok) throw new Error(data.error);
 
-        token = data.token;
-        localStorage.setItem('token', token);
+        localStorage.setItem('token', data.token);
         showGmailList();
     } catch (error) {
         alert(error.message);
@@ -78,8 +83,8 @@ document.getElementById('register').addEventListener('submit', async (e) => {
 });
 
 // Add Gmail
-document.getElementById('addGmail').addEventListener('click', () => {
-    const clientId = document.querySelector('meta[name="google-client-id"]').content;
+document.getElementById('addGmail').addEventListener('click', async () => {
+    const clientId = await fetch(`${API_URL}/google-client-id`).then(response => response.json());
     const redirectUri = encodeURIComponent(`${window.location.origin}/auth/google/callback`);
     const scope = encodeURIComponent('https://www.googleapis.com/auth/gmail.readonly https://www.googleapis.com/auth/userinfo.email');
     
@@ -96,7 +101,7 @@ document.getElementById('addGmail').addEventListener('click', () => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`,
+                    'Authorization': `Bearer ${getToken()}`,
                 },
                 body: JSON.stringify({ code: event.data.code }),
             });
@@ -118,7 +123,7 @@ document.getElementById('addGmail').addEventListener('click', () => {
 async function loadGmailTokens() {
     try {
         const response = await fetch(`${API_URL}/gmail/tokens`, {
-            headers: { 'Authorization': `Bearer ${token}` },
+            headers: { 'Authorization': `Bearer ${getToken()}` },
         });
 
         const tokens = await response.json();
@@ -164,7 +169,7 @@ document.getElementById('waitEmailForm').addEventListener('submit', async (e) =>
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`,
+                'Authorization': `Bearer ${getToken()}`,
             },
             body: JSON.stringify({ gmail, sender, timeout }),
         });
@@ -200,7 +205,7 @@ async function readLastEmail(gmail, sender = '') {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`,
+                'Authorization': `Bearer ${getToken()}`,
             },
             body: JSON.stringify({ gmail, sender }),
         });
@@ -235,7 +240,7 @@ async function deleteGmailToken(gmail) {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`,
+                'Authorization': `Bearer ${getToken()}`,
             },
             body: JSON.stringify({ gmail }),
         });
@@ -255,4 +260,70 @@ function showGmailList() {
     registerForm.classList.add('hidden');
     gmailList.classList.remove('hidden');
     loadGmailTokens();
+}
+
+// Xử lý logout
+document.getElementById('logoutBtn')?.addEventListener('click', () => {
+    localStorage.removeItem('token');
+    window.location.reload(); // Reload trang sau khi logout
+});
+
+// Xử lý forgot password
+document.getElementById('forgotPassword')?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = e.target.email.value;
+    
+    try {
+        const response = await fetch('/api/auth/forgot-password', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email })
+        });
+        
+        const data = await response.json();
+        if (response.ok) {
+            alert('Vui lòng kiểm tra email của bạn để đặt lại mật khẩu');
+            showLoginForm();
+        } else {
+            alert(data.error || 'Có lỗi xảy ra');
+        }
+    } catch (error) {
+        alert('Có lỗi xảy ra khi gửi yêu cầu');
+    }
+});
+
+// Xử lý các nút chuyển form
+document.getElementById('showForgotPassword')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    loginForm.classList.add('hidden');
+    registerForm.classList.add('hidden');
+    forgotPasswordForm.classList.remove('hidden');
+});
+
+document.getElementById('backToLogin')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    showLoginForm();
+});
+
+document.getElementById('loginInstead')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    showLoginForm();
+});
+
+// Xử lý reset password từ link email
+const urlParams = new URLSearchParams(window.location.search);
+const resetToken = urlParams.get('reset_token');
+if (resetToken) {
+    // Hiển thị form đặt lại mật khẩu
+    showResetPasswordForm(resetToken);
+}
+
+function showResetPasswordForm(token) {
+    // Thêm logic hiển thị form reset password
 } 
+
+function showLoginForm(token) {
+    loginForm.classList.remove('hidden');
+    registerForm.classList.add('hidden');
+    forgotPasswordForm.classList.add('hidden');
+}

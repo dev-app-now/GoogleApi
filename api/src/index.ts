@@ -12,7 +12,7 @@
  */
 
 import { Env, LoginRequest, RegisterRequest, User, WaitForEmailRequest, ReadLastEmailRequest } from './types';
-import { comparePasswords, error, generateToken, hashPassword, json, verifyToken, waitForEmail, readLastEmail, refreshGmailToken } from './utils';
+import { comparePasswords, error, generateToken, hashPassword, json, verifyToken, waitForEmail, readLastEmail, refreshGmailToken, sendResetPasswordEmail } from './utils';
 
 interface GoogleTokenResponse {
 	access_token: string;
@@ -57,12 +57,9 @@ export default {
 				return asset;
 			}
 
-			// Add CORS headers to all responses
-			const responseHeaders = {
-				'Access-Control-Allow-Origin': origin,
-				'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-				'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-			};
+			if (request.method === 'GET' && url.pathname.startsWith('/api/google-client-id')) {
+				return json(env.GOOGLE_CLIENT_ID);
+			}
 
 			// Auth routes
 			if (url.pathname === '/api/auth/register' && request.method === 'POST') {
@@ -108,6 +105,61 @@ export default {
 				return json({ token });
 			}
 
+			if (url.pathname === '/api/auth/forgot-password' && request.method === 'POST') {
+				const { email } = await request.json<{ email: string }>();
+				
+				// Kiểm tra email tồn tại
+				const user = await env.DB.prepare(
+					'SELECT id FROM users WHERE email = ?'
+				).bind(email).first();
+
+				if (!user) {
+					return error('Email không tồn tại trong hệ thống');
+				}
+
+				// Tạo token reset password
+				const resetToken = crypto.randomUUID();
+				const expiresAt = new Date();
+				expiresAt.setHours(expiresAt.getHours() + 1);
+
+				// Lưu token vào database
+				await env.DB.prepare(
+					'INSERT INTO password_resets (email, token, expires_at) VALUES (?, ?, ?)'
+				).bind(email, resetToken, expiresAt.toISOString()).run();
+
+				// Gửi email
+				const resetLink = `${url.origin}/reset-password?token=${resetToken}`;
+				await sendResetPasswordEmail(email, resetLink, env);
+
+				return json({ message: 'Email đặt lại mật khẩu đã được gửi' });
+			}
+
+			if (url.pathname === '/api/auth/reset-password' && request.method === 'POST') {
+				const { token, password } = await request.json<{ token: string, password: string }>();
+				
+				// Kiểm tra token hợp lệ và chưa hết hạn
+				const resetRequest = await env.DB.prepare(
+					'SELECT email FROM password_resets WHERE token = ? AND expires_at > ? AND used = 0'
+				).bind(token, new Date().toISOString()).first();
+
+				if (!resetRequest) {
+					return error('Link đặt lại mật khẩu không hợp lệ hoặc đã hết hạn');
+				}
+
+				// Cập nhật mật khẩu
+				const hashedPassword = await hashPassword(password);
+				await env.DB.prepare(
+					'UPDATE users SET password = ? WHERE email = ?'
+				).bind(hashedPassword, resetRequest.email).run();
+
+				// Đánh dấu token đã sử dụng
+				await env.DB.prepare(
+					'UPDATE password_resets SET used = 1 WHERE token = ?'
+				).bind(token).run();
+
+				return json({ message: 'Mật khẩu đã được đặt lại thành công' });
+			}
+
 			// Protected routes
 			const authHeader = request.headers.get('Authorization');
 			if (!authHeader?.startsWith('Bearer ')) {
@@ -120,11 +172,14 @@ export default {
 				return error('Invalid token', 401);
 			}
 
+			console.log(url.pathname);
+
 			// Gmail token management
 			if (url.pathname === '/api/gmail/tokens' && request.method === 'GET') {
 				const tokens = await env.DB.prepare(
 					'SELECT gmail FROM gmail_tokens WHERE user_id = ?'
 				).bind(payload.userId).all();
+				console.log(tokens);
 				return json(tokens.results);
 			}
 

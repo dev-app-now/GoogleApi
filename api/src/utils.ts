@@ -196,4 +196,10 @@ export async function readLastEmail(
     body,
     receivedAt: new Date(parseInt(emailData.internalDate)).toISOString(),
   };
+}
+
+export async function sendResetPasswordEmail(email: string, resetLink: string, env: Env) {
+    // Implement email sending logic here
+    // Có thể sử dụng SendGrid, Mailgun hoặc các dịch vụ email khác
+    console.log('Reset password email sent to:', email, 'with link:', resetLink);
 } 
