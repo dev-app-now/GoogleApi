@@ -310,7 +310,7 @@
     },
     "/api/sheets/{fileId}/style/{range}": {
       "post": {
-        "summary": "Update cell style",
+        "summary": "Update cell style. See https://developers.google.com/sheets/api/samples/formatting",
         "parameters": [
           {
             "name": "fileId",
@@ -334,11 +334,8 @@
                 "properties": {
                   "gmail": { "type": "string" },
                   "style": {
-                    "type": "object",
-                    "properties": {
-                      "backgroundColor": { "type": "object" },
-                      "textFormat": { "type": "object" }
-                    }
+                    "type": "string",
+                    "description": "JSON string of the style object. see https://developers.google.com/sheets/api/samples/formatting"
                   }
                 }
               }

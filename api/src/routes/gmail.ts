@@ -77,7 +77,7 @@ export async function handleGmail(request: Request, env: Env) {
     return json({ message: 'Gmail token deleted successfully' });
   }
 
-  if (url.pathname === '/api/gmail/wait-email' && request.method === 'POST') {
+  if (url.pathname === '/api/gmail/wait-for-email' && request.method === 'POST') {
     const { gmail, sender, timeout } = await request.json<{ gmail: string, sender: string, timeout?: number }>();
     
     const gmailToken = await env.DB.prepare(
@@ -105,7 +105,7 @@ export async function handleGmail(request: Request, env: Env) {
     }
   }
 
-  if (url.pathname === '/api/gmail/last-email' && request.method === 'POST') {
+  if (url.pathname === '/api/gmail/read-last-email' && request.method === 'POST') {
     const { gmail, sender } = await request.json<{ gmail: string, sender?: string }>();
     
     const gmailToken = await env.DB.prepare(

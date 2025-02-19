@@ -82,6 +82,7 @@ export async function updateStyle(
   range: string,
   style: any
 ) {
+  const keys = Object.keys(style).join(',');
   const response = await fetch(
     `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}:batchUpdate`,
     {
@@ -95,14 +96,14 @@ export async function updateStyle(
           repeatCell: {
             range: range,
             cell: { userEnteredFormat: style },
-            fields: 'userEnteredFormat'
+            fields: `userEnteredFormat(${keys})`
           }
         }]
       })
     }
   );
 
-  if (!response.ok) throw new Error('Failed to update style');
+  if (!response.ok) throw new Error('Failed to update style. '+ await response.text());
   return response.json();
 }
 

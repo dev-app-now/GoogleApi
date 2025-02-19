@@ -82,7 +82,7 @@ export async function handleSheets(request: Request, env: Env) {
 
   if (url.pathname.match(/^\/api\/sheets\/[^/]+\/values\/[^/]+$/) && request.method === 'GET') {
     const [, , , fileId, , range] = url.pathname.split('/');
-    const { gmail } = url.searchParams;
+    const gmail = url.searchParams.get('gmail');
 
     if (!fileId || !range || !gmail) {
       return error('Missing required parameters', 400);
@@ -147,7 +147,7 @@ export async function handleSheets(request: Request, env: Env) {
     }
 
     try {
-      const result = await updateStyle(gmailToken.access_token, fileId, range, style);
+      const result = await updateStyle(gmailToken.access_token, fileId, range, JSON.parse(style));
       return json(result);
     } catch (err) {
       console.error('Error updating style:', err);
