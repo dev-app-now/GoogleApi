@@ -1,4 +1,4 @@
-# Gmail Manager
+# Quick Google API
 
 A simple web application to manage Gmail accounts and monitor incoming emails.
 

@@ -31,7 +31,7 @@
   "env": {
     "development": {
       "vars": {
-        "REDIRECT_URI": "http://127.0.0.1:8787/auth/google/callback"
+        "REDIRECT_URI": "http://localhost:8787/auth/google/callback"
       }
     },
     "production": {

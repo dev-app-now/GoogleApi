@@ -220,9 +220,9 @@ export async function sendResetPasswordEmail(email: string, resetLink: string, e
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                from: 'Gmail Manager <no-reply@devappnow.com>',
+                from: 'Quick Google API <no-reply@devappnow.com>',
                 to: email,
-                subject: 'Reset Your Password - Gmail Manager',
+                subject: 'Reset Your Password - Quick Google API',
                 html: `
                     <h1>Reset Your Password</h1>
                     <p>You have requested to reset your password. Click the link below to set a new password:</p>
@@ -232,7 +232,7 @@ export async function sendResetPasswordEmail(email: string, resetLink: string, e
                     <p>If you didn't request this, please ignore this email.</p>
                     <br>
                     <p>Best regards,</p>
-                    <p>Gmail Manager Team</p>
+                    <p>Quick Google API Team</p>
                 `
             })
         });

@@ -3,13 +3,14 @@
 	"version": "0.0.0",
 	"private": true,
 	"scripts": {
-		"deploy": "wrangler deploy",
 		"dev": "wrangler dev",
 		"start": "wrangler dev",
 		"test": "vitest",
 		"cf-typegen": "wrangler types",
-		"migrate": "wrangler d1 execute gmail_manager --remote --file=./migrations/0001_init.sql",
-		"deploy:prod": "npm run migrate && npm run deploy"
+		"migrate": "wrangler d1 execute gmail_manager --file=./migrations/0001_init.sql",
+		"migrate:prod": "wrangler d1 execute gmail_manager --remote --file=./migrations/0001_init.sql",
+		"deploy": "wrangler deploy",
+		"deploy:prod": "npm run migrate:prod && npm run deploy"
 	},
 	"devDependencies": {
 		"@cloudflare/vitest-pool-workers": "^0.6.4",
