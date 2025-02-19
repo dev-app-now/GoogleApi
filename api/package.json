@@ -7,8 +7,8 @@
 		"start": "wrangler dev",
 		"test": "vitest",
 		"cf-typegen": "wrangler types",
-		"migrate": "wrangler d1 execute gmail_manager --file=./migrations/0001_init.sql",
-		"migrate:prod": "wrangler d1 execute gmail_manager --remote --file=./migrations/0001_init.sql",
+		"migrate": "wrangler d1 migrations apply gmail_manager",
+		"migrate:prod": "wrangler d1 migrations apply gmail_manager --remote",
 		"deploy": "wrangler deploy",
 		"deploy:prod": "npm run migrate:prod && npm run deploy"
 	},

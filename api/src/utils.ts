@@ -55,23 +55,22 @@ export function error(message: string, status = 400) {
   return json({ error: message }, status);
 }
 
-export async function refreshGmailToken(refreshToken: string, env: { GOOGLE_CLIENT_ID: string, GOOGLE_CLIENT_SECRET: string }) {
+export async function refreshGmailToken(refreshToken: string, clientId: string) {
   const response = await fetch('https://oauth2.googleapis.com/token', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      client_id: env.GOOGLE_CLIENT_ID,
-      client_secret: env.GOOGLE_CLIENT_SECRET,
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({
       refresh_token: refreshToken,
+      client_id: clientId,
       grant_type: 'refresh_token',
-    }),
+    }).toString(),
   });
 
   if (!response.ok) {
     throw new Error('Failed to refresh token');
   }
 
-  const data = await response.json<{ access_token: string }>();
+  const data = await response.json();
   return data.access_token;
 }
 
@@ -95,37 +94,32 @@ export async function checkNewEmail(accessToken: string, sender: string): Promis
 
 export async function waitForEmail(
   accessToken: string,
-  refreshToken: string,
+  gmail: string,
   sender: string,
-  timeout: number,
-  env: { GOOGLE_CLIENT_ID: string, GOOGLE_CLIENT_SECRET: string }
-): Promise<{ found: boolean; email?: EmailContent }> {
+  timeout: number = 60
+): Promise<EmailContent | null> {
   const startTime = Date.now();
-  let currentToken = accessToken;
 
   while (Date.now() - startTime < timeout * 1000) {
     try {
       // Kiểm tra email mới
-      const hasNewEmail = await checkNewEmail(currentToken, sender);
+      const hasNewEmail = await checkNewEmail(accessToken, sender);
       if (hasNewEmail) {
         // Nếu có email mới, đọc nội dung
-        const email = await readLastEmail(currentToken, sender);
-        return { found: true, email };
+        return await readLastEmail(accessToken, sender);
       }
 
       // Đợi 5 giây trước khi kiểm tra lại
       await new Promise(resolve => setTimeout(resolve, 5000));
     } catch (error) {
-      // Nếu token hết hạn, thử refresh
-      try {
-        currentToken = await refreshGmailToken(refreshToken, env);
-      } catch {
-        throw new Error('Failed to refresh access token');
+      if (error instanceof Error && error.message === 'Token expired') {
+        throw error;
       }
+      console.error('Error checking email:', error);
     }
   }
 
-  return { found: false };
+  return null;
 }
 
 export async function readLastEmail(
@@ -211,40 +205,36 @@ export async function readLastEmail(
   };
 }
 
-export async function sendResetPasswordEmail(email: string, resetLink: string, env: { RESEND_API_KEY: string }) {
-    try {
-        const response = await fetch('https://api.resend.com/emails', {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${env.RESEND_API_KEY}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                from: 'Quick Google API <no-reply@devappnow.com>',
-                to: email,
-                subject: 'Reset Your Password - Quick Google API',
-                html: `
-                    <h1>Reset Your Password</h1>
-                    <p>You have requested to reset your password. Click the link below to set a new password:</p>
-                    <p><a href="${resetLink}" style="display:inline-block;padding:12px 24px;background:#4F46E5;color:white;text-decoration:none;border-radius:4px;">Reset Password</a></p>
-                    <p>Or copy this link: ${resetLink}</p>
-                    <p>This link will expire in 1 hour.</p>
-                    <p>If you didn't request this, please ignore this email.</p>
-                    <br>
-                    <p>Best regards,</p>
-                    <p>Quick Google API Team</p>
-                `
-            })
-        });
+export async function sendResetPasswordEmail(apiKey: string, email: string, token: string) {
+  const resetLink = `${window.location.origin}/reset-password?token=${token}`;
+  
+  try {
+    const response = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        from: 'Quick Google API <no-reply@devappnow.com>',
+        to: email,
+        subject: 'Reset Your Password - Quick Google API',
+        html: `
+          <h1>Reset Your Password</h1>
+          <p>You have requested to reset your password. Click the link below to set a new password:</p>
+          <p><a href="${resetLink}">Reset Password</a></p>
+          <p>This link will expire in 1 hour.</p>
+          <p>If you didn't request this, please ignore this email.</p>
+          <br>
+          <p>Best regards,</p>
+          <p>Quick Google API Team</p>
+        `
+      })
+    });
 
-        if (!response.ok) {
-            console.error('Failed to send email:', await response.text());
-            throw new Error('Failed to send email');
-        }
-
-        return await response.json();
-    } catch (error) {
-        console.error('Error sending email:', error);
-        throw error;
-    }
+    return await response.json();
+  } catch (error) {
+    console.error('Error sending email:', error);
+    throw error;
+  }
 } 
