@@ -127,15 +127,15 @@ export default {
 					'INSERT INTO password_resets (email, token, expires_at) VALUES (?, ?, ?)'
 				).bind(email, resetToken, expiresAt.toISOString()).run();
 
-				// Gửi email
-				const resetLink = `${url.origin}/reset-password?token=${resetToken}`;
+				// Gửi email với link reset password
+				const resetLink = `${url.origin}/reset-pass.html?token=${resetToken}`;
 				await sendResetPasswordEmail(email, resetLink, env);
 
 				return json({ message: 'Email đặt lại mật khẩu đã được gửi' });
 			}
 
 			if (url.pathname === '/api/auth/reset-password' && request.method === 'POST') {
-				const { token, password } = await request.json<{ token: string, password: string }>();
+				const { token } = await request.json<{ token: string }>();
 				
 				// Kiểm tra token hợp lệ và chưa hết hạn
 				const resetRequest = await env.DB.prepare(
@@ -146,8 +146,11 @@ export default {
 					return error('Link đặt lại mật khẩu không hợp lệ hoặc đã hết hạn');
 				}
 
+				// Tạo mật khẩu mới ngẫu nhiên
+				const newPassword = generateRandomPassword();
+				const hashedPassword = await hashPassword(newPassword);
+
 				// Cập nhật mật khẩu
-				const hashedPassword = await hashPassword(password);
 				await env.DB.prepare(
 					'UPDATE users SET password = ? WHERE email = ?'
 				).bind(hashedPassword, resetRequest.email).run();
@@ -157,9 +160,10 @@ export default {
 					'UPDATE password_resets SET used = 1 WHERE token = ?'
 				).bind(token).run();
 
-				return json({ message: 'Mật khẩu đã được đặt lại thành công' });
+				return json({ message: 'Mật khẩu đã được đặt lại thành công', password: newPassword });
 			}
 
+			
 			// Protected routes
 			const authHeader = request.headers.get('Authorization');
 			if (!authHeader?.startsWith('Bearer ')) {
@@ -173,6 +177,37 @@ export default {
 			}
 
 			console.log(url.pathname);
+
+			if (url.pathname === '/api/auth/change-password' && request.method === 'POST') {
+				const { currentPassword, newPassword } = await request.json<{ currentPassword: string, newPassword: string }>();
+				
+				if (!currentPassword || !newPassword) {
+					return error('All fields are required');
+				}
+
+				// Lấy thông tin user
+				const user = await env.DB.prepare(
+					'SELECT * FROM users WHERE id = ?'
+				).bind(payload.userId).first<User>();
+
+				if (!user) {
+					return error('User not found');
+				}
+
+				// Kiểm tra mật khẩu hiện tại
+				if (!(await comparePasswords(currentPassword, user.password))) {
+					return error('Current password is incorrect');
+				}
+
+				// Cập nhật mật khẩu mới
+				const hashedPassword = await hashPassword(newPassword);
+				await env.DB.prepare(
+					'UPDATE users SET password = ? WHERE id = ?'
+				).bind(hashedPassword, user.id).run();
+
+				return json({ message: 'Password updated successfully' });
+			}
+
 
 			// Gmail token management
 			if (url.pathname === '/api/gmail/tokens' && request.method === 'GET') {
@@ -360,3 +395,15 @@ export default {
 		}
 	},
 } satisfies ExportedHandler<Env>;
+
+// Thêm hàm tạo mật khẩu ngẫu nhiên
+function generateRandomPassword() {
+	const length = 12;
+	const charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*';
+	let password = '';
+	for (let i = 0; i < length; i++) {
+		const randomIndex = Math.floor(Math.random() * charset.length);
+		password += charset[randomIndex];
+	}
+	return password;
+}

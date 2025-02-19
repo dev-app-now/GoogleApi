@@ -5,6 +5,7 @@ export interface Env {
   GOOGLE_CLIENT_ID: string;
   GOOGLE_CLIENT_SECRET: string;
   REDIRECT_URI: string;
+  RESEND_API_KEY: string;
 }
 
 export interface User {
@@ -50,4 +51,10 @@ export interface EmailContent {
   snippet: string;
   body: string;
   receivedAt: string;
+}
+
+export interface JWTPayload {
+    userId: number;
+    email: string;
+    exp?: number;
 } 

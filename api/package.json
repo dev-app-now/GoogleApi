@@ -7,7 +7,9 @@
 		"dev": "wrangler dev",
 		"start": "wrangler dev",
 		"test": "vitest",
-		"cf-typegen": "wrangler types"
+		"cf-typegen": "wrangler types",
+		"migrate": "wrangler d1 execute gmail_manager --remote --file=./migrations/0001_init.sql",
+		"deploy:prod": "npm run migrate && npm run deploy"
 	},
 	"devDependencies": {
 		"@cloudflare/vitest-pool-workers": "^0.6.4",

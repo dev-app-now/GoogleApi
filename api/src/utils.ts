@@ -11,11 +11,24 @@ export async function comparePasswords(password: string, hash: string): Promise<
 }
 
 export async function generateToken(user: User, secret: string): Promise<string> {
-  const token = await new SignJWT({ userId: user.id, email: user.email })
+  const encoder = new TextEncoder();
+  const keyData = encoder.encode(secret);
+  
+  const key = await crypto.subtle.importKey(
+    'raw',
+    keyData,
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign']
+  );
+
+  return new SignJWT({ 
+    userId: user.id,
+    email: user.email
+  })
     .setProtectedHeader({ alg: 'HS256' })
     .setExpirationTime('24h')
-    .sign(new TextEncoder().encode(secret));
-  return token;
+    .sign(key);
 }
 
 export async function verifyToken(token: string, secret: string) {
@@ -198,8 +211,40 @@ export async function readLastEmail(
   };
 }
 
-export async function sendResetPasswordEmail(email: string, resetLink: string, env: Env) {
-    // Implement email sending logic here
-    // Có thể sử dụng SendGrid, Mailgun hoặc các dịch vụ email khác
-    console.log('Reset password email sent to:', email, 'with link:', resetLink);
+export async function sendResetPasswordEmail(email: string, resetLink: string, env: { RESEND_API_KEY: string }) {
+    try {
+        const response = await fetch('https://api.resend.com/emails', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${env.RESEND_API_KEY}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                from: 'Gmail Manager <no-reply@devappnow.com>',
+                to: email,
+                subject: 'Reset Your Password - Gmail Manager',
+                html: `
+                    <h1>Reset Your Password</h1>
+                    <p>You have requested to reset your password. Click the link below to set a new password:</p>
+                    <p><a href="${resetLink}" style="display:inline-block;padding:12px 24px;background:#4F46E5;color:white;text-decoration:none;border-radius:4px;">Reset Password</a></p>
+                    <p>Or copy this link: ${resetLink}</p>
+                    <p>This link will expire in 1 hour.</p>
+                    <p>If you didn't request this, please ignore this email.</p>
+                    <br>
+                    <p>Best regards,</p>
+                    <p>Gmail Manager Team</p>
+                `
+            })
+        });
+
+        if (!response.ok) {
+            console.error('Failed to send email:', await response.text());
+            throw new Error('Failed to send email');
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error('Error sending email:', error);
+        throw error;
+    }
 } 

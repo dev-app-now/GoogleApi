@@ -259,6 +259,13 @@ function showGmailList() {
     loginForm.classList.add('hidden');
     registerForm.classList.add('hidden');
     gmailList.classList.remove('hidden');
+    
+    // Hiển thị email của user
+    const userData = parseJwt(getToken());
+    if (userData?.email) {
+        document.getElementById('userEmail').textContent = userData.email;
+    }
+    
     loadGmailTokens();
 }
 
@@ -327,3 +334,71 @@ function showLoginForm(token) {
     registerForm.classList.add('hidden');
     forgotPasswordForm.classList.add('hidden');
 }
+
+// Decode JWT để lấy thông tin user
+function parseJwt(token) {
+    try {
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        return JSON.parse(window.atob(base64));
+    } catch (e) {
+        return null;
+    }
+}
+
+// Change Password Modal
+const changePasswordModal = document.getElementById('changePasswordModal');
+const changePasswordForm = document.getElementById('changePasswordForm');
+
+document.getElementById('changePasswordBtn')?.addEventListener('click', () => {
+    changePasswordModal.classList.remove('hidden');
+});
+
+function closeChangePasswordModal() {
+    changePasswordModal.classList.add('hidden');
+    changePasswordForm.reset();
+}
+
+changePasswordForm?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const currentPassword = document.getElementById('currentPassword').value;
+    const newPassword = document.getElementById('newPassword').value;
+    const confirmNewPassword = document.getElementById('confirmNewPassword').value;
+    
+    if (newPassword !== confirmNewPassword) {
+        alert('New passwords do not match');
+        return;
+    }
+    
+    try {
+        const response = await fetch(`${API_URL}/auth/change-password`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${getToken()}`
+            },
+            body: JSON.stringify({
+                currentPassword,
+                newPassword
+            })
+        });
+        
+        const data = await response.json();
+        if (response.ok) {
+            alert('Password changed successfully');
+            closeChangePasswordModal();
+        } else {
+            alert(data.error || 'Failed to change password');
+        }
+    } catch (error) {
+        alert('An error occurred while changing password');
+    }
+});
+
+// Close modal when clicking outside
+changePasswordModal?.addEventListener('click', (e) => {
+    if (e.target === changePasswordModal) {
+        closeChangePasswordModal();
+    }
+});
