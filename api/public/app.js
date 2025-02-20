@@ -32,8 +32,7 @@ if (getToken()) {
 	//check token
 	const userData = parseJwt(getToken());
 	if (userData.exp * 1000 < Date.now()) {
-		localStorage.removeItem('token');
-		window.location.reload();
+		logout();
 	} else {
 		showGmailList();
 	}
@@ -274,8 +273,7 @@ function showGmailList() {
 
 // Xử lý logout
 document.getElementById('logoutBtn')?.addEventListener('click', () => {
-	localStorage.removeItem('token');
-	window.location.reload(); // Reload trang sau khi logout
+	logout();
 });
 
 // Xử lý forgot password
@@ -326,6 +324,11 @@ const resetToken = urlParams.get('reset_token');
 if (resetToken) {
 	// Hiển thị form đặt lại mật khẩu
 	showResetPasswordForm(resetToken);
+}
+
+function logout() {
+	localStorage.removeItem('token');
+	window.location.reload();
 }
 
 function showResetPasswordForm(token) {

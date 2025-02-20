@@ -1,4 +1,4 @@
-/**
+5/**
  * Welcome to Cloudflare Workers! This is your first worker.
  *
  * - Run `npm run dev` in your terminal to start a development server
@@ -11,20 +11,13 @@
  * Learn more at https://developers.cloudflare.com/workers/
  */
 
-import { Env, LoginRequest, RegisterRequest, User, WaitForEmailRequest, ReadLastEmailRequest } from './types';
-import { comparePasswords, error, generateToken, hashPassword, json, verifyToken, waitForEmail, readLastEmail, refreshGmailToken, sendResetPasswordEmail } from './utils';
-import { listDriveFiles, deleteFile, createSheet } from './sheets';
+import { Env } from './types';
+import { error } from './utils';
 import { handleAuth } from './routes/auth';
 import { handleGmail } from './routes/gmail';
 import { handleSheets } from './routes/sheets';
 
-interface DeleteGmailRequest {
-	gmail: string;
-}
 
-interface AddGmailRequest {
-	code: string;
-}
 
 export default {
 	async fetch(request: Request, env: Env): Promise<Response> {
@@ -74,13 +67,4 @@ export default {
 } satisfies ExportedHandler<Env>;
 
 // Thêm hàm tạo mật khẩu ngẫu nhiên
-function generateRandomPassword() {
-	const length = 12;
-	const charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*';
-	let password = '';
-	for (let i = 0; i < length; i++) {
-		const randomIndex = Math.floor(Math.random() * charset.length);
-		password += charset[randomIndex];
-	}
-	return password;
-}
+
