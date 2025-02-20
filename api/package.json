@@ -7,8 +7,8 @@
 		"start": "wrangler dev",
 		"test": "vitest",
 		"cf-typegen": "wrangler types",
-		"migrate": "wrangler d1 migrations apply gmail_manager",
-		"migrate:prod": "wrangler d1 migrations apply gmail_manager --remote",
+		"migrate": "wrangler d1 migrations apply googleapi",
+		"migrate:prod": "wrangler d1 migrations apply googleapi --remote",
 		"deploy": "wrangler deploy",
 		"deploy:prod": "npm run migrate:prod && npm run deploy"
 	},

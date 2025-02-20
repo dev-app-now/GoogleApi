@@ -10,7 +10,7 @@ enabled = true
 
 [[d1_databases]]
 binding = "DB"
-database_name = "gmail_manager"
+database_name = "googleapi"
 database_id = "2d03b6de-d153-4f64-a607-9e35f0a8e55b"
 
 [assets]
