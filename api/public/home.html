@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quick Google API - Gmail & Sheets Automation</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <meta name="description" content="Automate your Gmail and Google Sheets tasks with Quick Google API. Monitor emails, manage spreadsheets, and more.">
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex">
+                    <div class="flex-shrink-0 flex items-center gap-2">
+                        <img class="h-8 w-auto" src="/logo.png" alt="Quick Google API Logo">
+                        <div>Quick Google API</div>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="/policy.html" class="text-gray-600 hover:text-gray-900">Privacy Policy</a>
+                    <a href="/" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">
+                        Login to Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="bg-white">
+        <div class="max-w-7xl mx-auto py-16 px-4 sm:py-24 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <h1 class="text-4xl font-extrabold text-gray-900 sm:text-5xl sm:tracking-tight lg:text-6xl">
+                    Automate Your Gmail & Sheets Tasks
+                </h1>
+                <p class="mt-6 max-w-2xl mx-auto text-xl text-gray-500">
+                    Monitor emails, manage spreadsheets, and automate workflows with our powerful API integration.
+                </p>
+                <div class="mt-10">
+                    <a href="/" class="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
+                        Get Started
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features -->
+    <div class="py-16 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <h2 class="text-3xl font-extrabold text-gray-900">
+                    Key Features
+                </h2>
+            </div>
+
+            <div class="mt-16">
+                <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+                    <!-- Gmail Features -->
+                    <div class="bg-white overflow-hidden shadow rounded-lg">
+                        <div class="p-6">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0">
+                                    <svg class="h-6 w-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                                    </svg>
+                                </div>
+                                <h3 class="ml-3 text-lg font-medium text-gray-900">Gmail Integration</h3>
+                            </div>
+                            <div class="mt-4 text-gray-500">
+                                <ul class="list-disc pl-5 space-y-2">
+                                    <li>Monitor multiple Gmail accounts</li>
+                                    <li>Read latest emails</li>
+                                    <li>Wait for specific emails</li>
+                                    <li>Secure OAuth2 authentication</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sheets Features -->
+                    <div class="bg-white overflow-hidden shadow rounded-lg">
+                        <div class="p-6">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0">
+                                    <svg class="h-6 w-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                    </svg>
+                                </div>
+                                <h3 class="ml-3 text-lg font-medium text-gray-900">Google Sheets Management</h3>
+                            </div>
+                            <div class="mt-4 text-gray-500">
+                                <ul class="list-disc pl-5 space-y-2">
+                                    <li>Create new spreadsheets</li>
+                                    <li>Read/Write cell ranges</li>
+                                    <li>Update cell styles</li>
+                                    <li>Manage file permissions</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- API Features -->
+                    <div class="bg-white overflow-hidden shadow rounded-lg">
+                        <div class="p-6">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0">
+                                    <svg class="h-6 w-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
+                                    </svg>
+                                </div>
+                                <h3 class="ml-3 text-lg font-medium text-gray-900">Developer API</h3>
+                            </div>
+                            <div class="mt-4 text-gray-500">
+                                <ul class="list-disc pl-5 space-y-2">
+                                    <li>RESTful API endpoints</li>
+                                    <li>Swagger documentation</li>
+                                    <li>JWT authentication</li>
+                                    <li>Rate limiting & caching</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Data Usage Section -->
+    <div class="bg-white py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="lg:text-center">
+                <h2 class="text-3xl font-extrabold text-gray-900">
+                    How We Use Your Data
+                </h2>
+                <p class="mt-4 max-w-2xl text-xl text-gray-500 lg:mx-auto">
+                    We take your privacy seriously. Here's what data we collect and why:
+                </p>
+            </div>
+
+            <div class="mt-10">
+                <div class="space-y-10 md:space-y-0 md:grid md:grid-cols-2 md:gap-x-8 md:gap-y-10">
+                    <div class="relative">
+                        <h3 class="text-lg font-medium text-gray-900">Gmail Access</h3>
+                        <p class="mt-2 text-gray-500">
+                            We request access to read your Gmail messages to provide email monitoring and notification services.
+                            We never store the content of your emails, only metadata needed for functionality.
+                        </p>
+                    </div>
+
+                    <div class="relative">
+                        <h3 class="text-lg font-medium text-gray-900">Google Sheets Access</h3>
+                        <p class="mt-2 text-gray-500">
+                            We request access to your Google Sheets to enable spreadsheet automation features.
+                            We only access the specific sheets you choose to work with.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-50">
+        <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center">
+                    <img class="h-8 w-auto" src="/logo.png" alt="Quick Google API Logo">
+                    <p class="ml-3 text-gray-500 text-sm">
+                        © 2024 Quick Google API. All rights reserved.
+                    </p>
+                </div>
+                <div class="flex space-x-6">
+                    <a href="/policy.html" class="text-gray-500 hover:text-gray-900">
+                        Privacy Policy
+                    </a>
+                    <a href="/swagger.html" class="text-gray-500 hover:text-gray-900">
+                        API Documentation
+                    </a>
+                    <a href="mailto:tiephoang.dev@gmail.com" class="text-gray-500 hover:text-gray-900">
+                        Contact
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html> 

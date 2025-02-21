@@ -1,4 +1,4 @@
-5/**
+/**
  * Welcome to Cloudflare Workers! This is your first worker.
  *
  * - Run `npm run dev` in your terminal to start a development server
@@ -37,9 +37,12 @@ export default {
 		try {
 			// Serve static files
 			if (request.method === 'GET' && !url.pathname.startsWith('/api/')) {
+				if (url.pathname === '/home') {
+					return env.ASSETS.fetch(new Request(`${url.origin}/home.html`));
+				}
+				
 				const asset = await env.ASSETS.fetch(request);
 				if (asset.status === 404) {
-					// Serve index.html for all non-API routes that don't match a static file
 					return env.ASSETS.fetch(new Request(`${url.origin}/index.html`));
 				}
 				return asset;
