@@ -216,9 +216,9 @@ export async function sendResetPasswordEmail(apiKey: string, email: string, toke
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        from: 'Quick Google API <no-reply@devappnow.com>',
+        from: 'GGTool <no-reply@devappnow.com>',
         to: email,
-        subject: 'Reset Your Password - Quick Google API',
+        subject: 'Reset Your Password - GGTool',
         html: `
           <h1>Reset Your Password</h1>
           <p>You have requested to reset your password. Click the link below to set a new password:</p>
@@ -227,7 +227,7 @@ export async function sendResetPasswordEmail(apiKey: string, email: string, toke
           <p>If you didn't request this, please ignore this email.</p>
           <br>
           <p>Best regards,</p>
-          <p>Quick Google API Team</p>
+          <p>GGTool Team</p>
         `
       })
     });

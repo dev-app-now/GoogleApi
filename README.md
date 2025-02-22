@@ -1,4 +1,4 @@
-# Quick Google API
+# GGTool
 
 A simple web application to manage Gmail accounts and monitor incoming emails.
 
@@ -26,7 +26,7 @@ A simple web application to manage Gmail accounts and monitor incoming emails.
 2. Clone and install dependencies:
    ```bash
    git clone <repository-url>
-   cd GoogleApi/api
+   cd GGTool/api
    npm install
    ```
 
@@ -140,7 +140,7 @@ A simple web application to manage Gmail accounts and monitor incoming emails.
 2. Clone và cài đặt dependencies:
    ```bash
    git clone <repository-url>
-   cd GoogleApi/api
+   cd GGTool/api
    npm install
    ```
 

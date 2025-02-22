@@ -1,7 +1,7 @@
 # Wrangler configuration file
 # For more details: https://developers.cloudflare.com/workers/wrangler/configuration/
 
-name = "googleapi"
+name = "ggtool"
 main = "src/index.ts"
 compatibility_date = "2024-01-01"
 
@@ -13,7 +13,7 @@ REDIRECT_URI = "http://localhost:8787/auth/google/callback"
 
 [[d1_databases]]
 binding = "DB"
-database_name = "googleapi"
+database_name = "ggtool"
 database_id = "2d03b6de-d153-4f64-a607-9e35f0a8e55b"
 
 [assets]
@@ -22,4 +22,4 @@ binding = "ASSETS"
 
 [env.production]
 [env.production.vars]
-REDIRECT_URI = "https://google.devappnow.com/auth/google/callback"
+REDIRECT_URI = "https://ggtool.devappnow.com/auth/google/callback"
